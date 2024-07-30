@@ -19,8 +19,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
          // Create permissions
          Permission::create(['name' => 'manage_users']);
-         Permission::create(['name' => 'manage_posts']);
          Permission::create(['name' => 'manage_categories']);
+         Permission::create(['name' => 'manage_posts']);
          Permission::create(['name' => 'manage_tags']);
          Permission::create(['name' => 'manage_comments']);
 

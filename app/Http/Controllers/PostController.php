@@ -5,17 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Resources\PostResource;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 use App\Http\Requests\StorePostRequest;
+use Illuminate\Support\Facades\Request;
 use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $posts = Post::with(['author', 'category', 'tags'])->paginate();
+
+    public function index(Request $request) {
+        $posts = QueryBuilder::for(Post::class)
+            ->allowedFilters(['title', 'author.name', 'category.name', 'tags.name'])
+            ->paginate();
+
         return PostResource::collection($posts);
     }
 
@@ -24,12 +33,9 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $post = Post::create([
-            'title' => $request->title,
-            'body' => $request->body,
-            'user_id' => Auth::id(),
-            'category_id' => $request->category_id,
-        ]);
+        $postData=$request->all();
+        $postData['user_id']=Auth::id();
+        $post = Post::create($postData);
 
         if ($request->has('tags')) {
             $post->tags()->attach($request->tags);
@@ -41,49 +47,65 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        return new PostResource($post->load(['author', 'category', 'tags']));
+        try {
+            $post = Post::findOrFail($id);
+            return new PostResource($post->load(['author', 'category', 'tags','comments']));
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, $id)
     {
-        $this->authorize('update', $post);
+        try {
+            $post = Post::findOrFail($id);
 
+            if ($request->user()->cannot('update', $post)) {
+                return response()->json(['message' => 'unauthorized action'], 403);
+            }
 
-        if ($request->has('title')) {
-            $post->title = $request->title;
+            $post->fill($request->only(['title', 'body', 'category_id']));
+
+            if ($request->has('tags')) {
+                $post->tags()->sync($request->tags);
+            }
+
+            $post->save();
+
+            return new PostResource($post);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'Post not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
-
-        if ($request->has('body')) {
-            $post->body = $request->body;
-        }
-
-        if ($request->has('category_id')) {
-            $post->category_id = $request->category_id;
-        }
-
-        if ($request->has('tags')) {
-            $post->tags()->sync($request->tags);
-        }
-
-        $post->save();
-
-        return new PostResource($post);
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        $this->authorize('delete', $post);
+        try {
+            $post = Post::findOrFail($id);
 
-        $post->delete();
+            if (auth()->user()->cannot('update', $post)) {
+                return response()->json(['message' => 'unauthorized action'], 403);
+            }
 
-        return response()->json(['message' => 'Post deleted successfully']);
+            $post->delete();
+
+            return response()->json(['message' => 'Post deleted successfully']);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'Post not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+        }
     }
 }

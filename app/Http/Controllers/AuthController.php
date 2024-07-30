@@ -4,35 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        DB::beginTransaction();
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            $password = Hash::make($request->password);
+            $userData = $request->except('password', 'password_confirmation');
+            $userData['password'] = $password;
+            $user = User::create($userData);
 
-        return response()->json(['message' => 'User registered successfully.'], 201);
+            $role = Role::where('name', 'author')->first();
+            if (!$role) {
+                throw new \Exception('Role not found.');
+            }
+            $user->assignRole($role);
+
+            DB::commit();
+
+            return response()->json(['message' => 'User registered successfully.'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
 
+    public function login(LoginRequest $request)
+    {
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -45,6 +54,8 @@ class AuthController extends Controller
 
         return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
     }
+
+
 
     public function logout(Request $request)
     {

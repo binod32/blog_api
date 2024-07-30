@@ -2,53 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        if (!Gate::allows('admin')) {
+            $this->middleware('admin');
+        }
+
+    }
+
     public function index()
     {
-        $users = User::paginate();
-        return response()->json($users);
+        return UserResource::collection(User::paginate());
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|string|exists:roles,name',
-        ]);
+        DB::beginTransaction();
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            $password = Hash::make($request->password);
+            $userData = $request->except('password');
+            $userData['password'] = $password;
+            $user = User::create($userData);
 
-        $user->assignRole($request->role);
+            $role = Role::where('name', 'author')->first();
+            if (!$role) {
+                throw new \Exception('Role not found.');
+            }
+            $user->assignRole($role);
 
-        return response()->json($user, 201);
+            DB::commit();
+
+            return response()->json(['message' => 'User created successfully.'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    public function show(User $user)
+    public function show($id)
     {
-        return response()->json($user);
+        try {
+            $user = User::findOrFail($id);
+            return new UserResource($user);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'string|min:8|nullable',
-            'role' => 'string|exists:roles,name|nullable',
-        ]);
-
         if ($request->has('name')) {
             $user->name = $request->name;
         }
@@ -61,18 +78,20 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
 
-        if ($request->has('role')) {
-            $user->syncRoles([$request->role]);
-        }
 
         $user->save();
 
-        return response()->json($user);
+        return new UserResource($user);
     }
 
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        $user->delete();
-        return response()->json(['message' => 'User deleted successfully']);
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 }
