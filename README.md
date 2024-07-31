@@ -66,6 +66,46 @@ This is a RESTful API for a blog application built with Laravel. It allows users
 
 ## API Endpoints
 
+### Authentication
+
+-   **Register a new user**
+
+    ```http
+    POST /api/register
+    ```
+
+    Request body:
+
+    ```json
+    {
+        "name": "Jane Doe",
+        "email": "jane@example.com",
+        "password": "password",
+        "password_confirmation": "password"
+    }
+    ```
+
+-   **Login**
+
+    ```http
+    POST /api/login
+    ```
+
+    Request body:
+
+    ```json
+    {
+        "email": "jane@example.com",
+        "password": "password"
+    }
+    ```
+
+-   **Logout**
+
+    ```http
+    POST /api/logout
+    ```
+
 ### User Management
 
 -   **Get all users**
@@ -632,7 +672,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 ## License
 
-This README file now includes detailed installation instructions, API endpoints for managing users, posts, categories, tags, and comments, and additional sections for contributing, the code of conduct, security vulnerabilities, and licensing. Make sure to replace the GitHub repository URL with the actual URL if it differs.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ```
 
