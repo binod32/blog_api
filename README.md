@@ -22,7 +22,7 @@ This is a RESTful API for a blog application built with Laravel. It allows users
 -   CRUD operations for users, posts, categories, tags, and comments
 -   Middleware for role-based access control
 -   Polymorphic relationships for comments and tags
--   Search and filter functionality using Laravel Query Builder
+-   Search and filter functionality for Posts using Laravel Query Builder
 -   Eager loading for optimized database queries
 -   Dynamic pagination
 
