@@ -114,36 +114,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     GET /api/users
     ```
 
-    Response: 200 OK
-
-    ```json
-    [
-        {
-            "id": 1,
-            "name": "John Doe",
-            "email": "john@example.com",
-            "created_at": "2024-01-01T00:00:00.000000Z",
-            "updated_at": "2024-01-01T00:00:00.000000Z"
-        }
-    ]
-    ```
-
 -   **Get a single user**
 
     ```http
-    GET /api/users/{user}
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
+    GET /api/users/{user_id}
     ```
 
 -   **Create a new user**
@@ -158,27 +132,14 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     {
         "name": "Jane Doe",
         "email": "jane@example.com",
-        "password": "password",
-        "role": "admin"
-    }
-    ```
-
-    Response: 201 Created
-
-    ```json
-    {
-        "id": 2,
-        "name": "Jane Doe",
-        "email": "jane@example.com",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
+        "password": "password"
     }
     ```
 
 -   **Update a user**
 
     ```http
-    PUT /api/users/{user}
+    PUT /api/users/{user_id}
     ```
 
     Request body:
@@ -187,30 +148,15 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     {
         "name": "John Doe",
         "email": "john@example.com",
-        "password": "newpassword",
-        "role": "user"
-    }
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
+        "password": "newpassword"
     }
     ```
 
 -   **Delete a user**
 
     ```http
-    DELETE /api/users/{user}
+    DELETE /api/users/{user_id}
     ```
-
-    Response: 204 No Content
 
 ### Post Management
 
@@ -220,40 +166,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     GET /api/posts
     ```
 
-    Response: 200 OK
-
-    ```json
-    [
-        {
-            "id": 1,
-            "title": "First Post",
-            "body": "This is the body of the first post.",
-            "author_id": 1,
-            "category_id": 1,
-            "created_at": "2024-01-01T00:00:00.000000Z",
-            "updated_at": "2024-01-01T00:00:00.000000Z"
-        }
-    ]
-    ```
-
 -   **Get a single post**
 
     ```http
-    GET /api/posts/{post}
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "title": "First Post",
-        "body": "This is the body of the first post.",
-        "author_id": 1,
-        "category_id": 1,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
+    GET /api/posts/{post_id}
     ```
 
 -   **Create a new post**
@@ -270,28 +186,14 @@ This is a RESTful API for a blog application built with Laravel. It allows users
         "body": "This is the body of the new post.",
         "author_id": 1,
         "category_id": 1,
-        "tags": [1, 2]
-    }
-    ```
-
-    Response: 201 Created
-
-    ```json
-    {
-        "id": 2,
-        "title": "New Post",
-        "body": "This is the body of the new post.",
-        "author_id": 1,
-        "category_id": 1,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
+        "tags": [1]
     }
     ```
 
 -   **Update a post**
 
     ```http
-    PUT /api/posts/{post}
+    PUT /api/posts/{post_id}
     ```
 
     Request body:
@@ -301,21 +203,7 @@ This is a RESTful API for a blog application built with Laravel. It allows users
         "title": "Updated Post",
         "body": "This is the updated body of the post.",
         "category_id": 2,
-        "tags": [1, 3]
-    }
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "title": "Updated Post",
-        "body": "This is the updated body of the post.",
-        "author_id": 1,
-        "category_id": 2,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
+        "tags": [2]
     }
     ```
 
@@ -325,8 +213,6 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     DELETE /api/posts/{post}
     ```
 
-    Response: 204 No Content
-
 ### Category Management
 
 -   **Get all categories**
@@ -335,34 +221,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     GET /api/categories
     ```
 
-    Response: 200 OK
-
-    ```json
-    [
-        {
-            "id": 1,
-            "name": "Technology",
-            "created_at": "2024-01-01T00:00:00.000000Z",
-            "updated_at": "2024-01-01T00:00:00.000000Z"
-        }
-    ]
-    ```
-
 -   **Get a single category**
 
     ```http
-    GET /api/categories/{category}
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "Technology",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
+    GET /api/categories/{category_id}
     ```
 
 -   **Create a new category**
@@ -379,21 +241,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     }
     ```
 
-    Response: 201 Created
-
-    ```json
-    {
-        "id": 2,
-        "name": "Science",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
-    ```
-
 -   **Update a category**
 
     ```http
-    PUT /api/categories/{category}
+    PUT /api/categories/{category_id}
     ```
 
     Request body:
@@ -404,24 +255,11 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     }
     ```
 
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "Updated Category",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
-    ```
-
 -   **Delete a category**
 
     ```http
     DELETE /api/categories/{category}
     ```
-
-    Response: 204 No Content
 
 ### Tag Management
 
@@ -431,34 +269,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     GET /api/tags
     ```
 
-    Response: 200 OK
-
-    ```json
-    [
-        {
-            "id": 1,
-            "name": "Laravel",
-            "created_at": "2024-01-01T00:00:00.000000Z",
-            "updated_at": "2024-01-01T00:00:00.000000Z"
-        }
-    ]
-    ```
-
 -   **Get a single tag**
 
     ```http
-    GET /api/tags/{tag}
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "Laravel",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
+    GET /api/tags/{tag_id}
     ```
 
 -   **Create a new tag**
@@ -475,21 +289,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     }
     ```
 
-    Response: 201 Created
-
-    ```json
-    {
-        "id": 2,
-        "name": "PHP",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
-    ```
-
 -   **Update a tag**
 
     ```http
-    PUT /api/tags/{tag}
+    PUT /api/tags/{tag_id}
     ```
 
     Request body:
@@ -500,24 +303,11 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     }
     ```
 
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "name": "Updated Tag",
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
-    ```
-
 -   **Delete a tag**
 
     ```http
-    DELETE /api/tags/{tag}
+    DELETE /api/tags/{tag_id}
     ```
-
-    Response: 204 No Content
 
 ### Comment Management
 
@@ -527,40 +317,10 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     GET /api/comments
     ```
 
-    Response: 200 OK
-
-    ```json
-    [
-        {
-            "id": 1,
-            "body": "This is a comment.",
-            "commentable_id": 1,
-            "commentable_type": "App\\Models\\Post",
-            "user_id": 1,
-            "created_at": "2024-01-01T00:00:00.000000Z",
-            "updated_at": "2024-01-01T00:00:00.000000Z"
-        }
-    ]
-    ```
-
 -   **Get a single comment**
 
     ```http
-    GET /api/comments/{comment}
-    ```
-
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "body": "This is a comment.",
-        "commentable_id": 1,
-        "commentable_type": "App\\Models\\Post",
-        "user_id": 1,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
+    GET /api/comments/{comment_id}
     ```
 
 -   **Create a new comment**
@@ -574,30 +334,14 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     ```json
     {
         "body": "This is a new comment.",
-        "commentable_id": 1,
-        "commentable_type": "App\\Models\\Post",
-        "user_id": 1
-    }
-    ```
-
-    Response: 201 Created
-
-    ```json
-    {
-        "id": 2,
-        "body": "This is a new comment.",
-        "commentable_id": 1,
-        "commentable_type": "App\\Models\\Post",
-        "user_id": 1,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
+        "post_id": 1
     }
     ```
 
 -   **Update a comment**
 
     ```http
-    PUT /api/comments/{comment}
+    PUT /api/comments/{comment_id}
     ```
 
     Request body:
@@ -608,34 +352,17 @@ This is a RESTful API for a blog application built with Laravel. It allows users
     }
     ```
 
-    Response: 200 OK
-
-    ```json
-    {
-        "id": 1,
-        "body": "This is an updated comment.",
-        "commentable_id": 1,
-        "commentable_type": "App\\Models\\Post",
-        "user_id": 1,
-        "created_at": "2024-01-01T00:00:00.000000Z",
-        "updated_at": "2024-01-01T00:00:00.000000Z"
-    }
-    ```
-
 -   **Delete a comment**
 
     ```http
-    DELETE /api/comments/{comment}
+    DELETE /api/comments/{comment_id}
     ```
-
-    Response: 204 No Content
 
 ## Role Management
 
 The application uses Spatie's Laravel-Permission package to manage roles and permissions. By default, the following roles are included:
 
 -   Admin
--   User
 -   Author
 
 The following permissions are included:
